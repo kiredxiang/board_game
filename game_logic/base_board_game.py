@@ -68,3 +68,29 @@ class BaseBoardGame:
         self.move_history = []
         self.game_over = False
         self.winner = 0
+
+    def surrender(self):
+        """当前玩家认输"""
+        if not self.game_over:
+            self.game_over = True
+            self.winner = 3 - self.current_player  # 对手获胜
+            return True
+        return False
+
+    def pass_move(self):
+        if not self.game_over:
+            self.current_player = 3 - self.current_player  # 切换玩家
+            self.move_history.append((-1, -1, self.current_player))  # -1表示pass
+            return True
+        return False
+
+    def _determine_winner(self):
+        # 简单按棋子数量判断
+        black_count = sum(row.count(1) for row in self.board)
+        white_count = sum(row.count(2) for row in self.board)
+        if black_count > white_count:
+            self.winner = 1
+        elif white_count > black_count:
+            self.winner = 2
+        else:
+            self.winner = 0  # 和棋

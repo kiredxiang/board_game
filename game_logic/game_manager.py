@@ -25,7 +25,6 @@ class BoardGameManager:
         self.current_game = game
         self.notify_observers()
 
-    # game_logic/game_manager.py
 
     def make_move(self, x, y):
         """处理落子请求"""
@@ -61,3 +60,8 @@ class BoardGameManager:
         """通知所有观察者游戏状态已更新"""
         for observer in self.observers:
             observer()
+
+    def pass_move(self):
+        if self.current_game:
+            return self.current_game.pass_move()
+        return False

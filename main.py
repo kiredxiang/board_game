@@ -6,7 +6,7 @@ from game_logic.game_manager import BoardGameManager  # 添加这行导入BoardG
 
 
 if __name__ == "__main__":
-    # 初始化游戏管理器
+    # 初始化游戏管理
     game_manager = BoardGameManager.get_instance()
     game_manager.start_new_game(GomokuGame(board_size=15))
 

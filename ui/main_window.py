@@ -90,7 +90,7 @@ class MainWindow(tk.Tk):
 
         # 围棋特有的Pass按钮
         self.pass_button = tk.Button(self.info_frame, text="Pass", command=self.on_pass_click,
-                                     font=("SimHei", 12), bg="#e0e0e0", relief=tk.RAISED, state=tk.DISABLED)
+                                     font=("SimHei", 12), bg="#e0e0e0", relief=tk.RAISED, state=tk.NORMAL)
         self.pass_button.pack(fill=tk.X, padx=20, pady=5)
 
         # 历史记录区域
@@ -109,6 +109,11 @@ class MainWindow(tk.Tk):
         self.exit_button = tk.Button(self.info_frame, text="退出游戏", command=self.on_exit_click,
                                      font=("SimHei", 12), bg="#e0e0e0", relief=tk.RAISED)
         self.exit_button.pack(fill=tk.X, padx=20, pady=5)
+
+        # 认输按钮
+        self.surrender_button = tk.Button(self.info_frame, text="认输", command=self.on_surrender_click,
+                                          font=("SimHei", 12), bg="#e0e0e0", relief=tk.RAISED)
+        self.surrender_button.pack(fill=tk.X, padx=20, pady=5)
 
     def on_exit_click(self):
         """处理退出按钮点击"""
@@ -169,6 +174,26 @@ class MainWindow(tk.Tk):
 
         # 更新UI
         self.update_ui()
+
+    def on_surrender_click(self):
+        """处理认输按钮点击"""
+        current_player = self.game_manager.current_game.current_player
+        player_text = "黑棋" if current_player == 1 else "白棋"
+
+        if messagebox.askyesno("确认认输", f"确定要认输吗？\n{player_text}将输掉此局。"):
+            # 设置游戏结束并指定胜利者
+            self.game_manager.current_game.game_over = True
+            self.game_manager.current_game.winner = 3 - current_player  # 对手获胜
+
+            # 更新UI
+            self.update_ui()
+
+            # 显示结果
+            winner_text = "黑棋" if self.game_manager.current_game.winner == 1 else "白棋"
+            messagebox.showinfo("游戏结束", f"{winner_text}获胜！")
+
+            # 记录到历史
+            self.update_history(f"{player_text}认输，{winner_text}获胜")
 
     def select_game_type(self):
         """选择游戏类型对话框"""
@@ -282,3 +307,17 @@ class MainWindow(tk.Tk):
         self.history_text.config(state=tk.NORMAL)
         self.history_text.delete(1.0, tk.END)
         self.history_text.config(state=tk.DISABLED)
+
+    def on_pass_click(self):
+        if self.game_manager.pass_move():
+            player_text = "黑棋" if self.game_manager.current_game.current_player == 2 else "白棋"
+            self.update_history(f"{player_text} Pass")
+            self.update_ui()
+            # 检查是否达到连续Pass结束条件
+            pass_count = self.game_manager.current_game.move_history.count((-1, -1, 1)) + self.game_manager.current_game.move_history.count((-1, -1, 2))
+            if pass_count >= 2:
+                self.game_manager.current_game.game_over = True
+                self.game_manager.current_game._determine_winner()  # 需完善此方法判断五子棋胜负
+                self.update_ui()
+                winner = "黑棋" if self.game_manager.current_game.winner == 1 else "白棋"
+                messagebox.showinfo("游戏结束", f"{winner}获胜！")
