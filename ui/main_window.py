@@ -57,6 +57,7 @@ class MainWindow(tk.Tk):
         # 初始化新游戏
         self.start_new_game()
 
+
     def create_game_info_panel(self):
         """创建游戏信息面板"""
         # 游戏类型标签
@@ -104,6 +105,16 @@ class MainWindow(tk.Tk):
         self.history_text.pack(fill=tk.BOTH, expand=True)
         self.history_text.config(state=tk.DISABLED)
 
+        # 退出按钮
+        self.exit_button = tk.Button(self.info_frame, text="退出游戏", command=self.on_exit_click,
+                                     font=("SimHei", 12), bg="#e0e0e0", relief=tk.RAISED)
+        self.exit_button.pack(fill=tk.X, padx=20, pady=5)
+
+    def on_exit_click(self):
+        """处理退出按钮点击"""
+        if messagebox.askyesno("确认退出", "确定要退出游戏吗？"):
+            self.quit()  # 退出主循环
+            self.destroy()  # 销毁窗口
     def start_new_game(self):
         """开始新游戏"""
         # 选择游戏类型
